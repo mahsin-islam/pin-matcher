@@ -1,66 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pin Generator</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="container">
         <div class="row">
             <div class="col-md-6">
                 <div class="pin-generator half-width">
                     <input id="show-generate-pin" class="form-control" type="text" value="">
-                    <button class="generate-btn" onClick="generatePinButton();">Generate Pin</button>
+                    <button class="generate-btn" onClick="generatePin();">Generate Pin</button>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="input-section half-width">
-                    <input class="form-control" type="text">
+                    <input id="typed-pin" class="form-control" type="text">
                     <div class="numbers">
-                        <div class="calc-body">
+                        <div id="digit-container" class="calc-body">
                             <div class="calc-button-row">
-                              <div class="button">7</div>
-                              <div class="button">8</div>
-                              <div class="button">9</div>
+                                <div class="button">7</div>
+                                <div class="button">8</div>
+                                <div class="button">9</div>
                             </div>
                             <div class="calc-button-row">
-                              <div class="button">4</div>
-                              <div class="button">5</div>
-                              <div class="button">6</div>
+                                <div class="button">4</div>
+                                <div class="button">5</div>
+                                <div class="button">6</div>
                             </div>
                             <div class="calc-button-row">
-                              <div class="button">1</div>
-                              <div class="button">2</div>
-                              <div class="button">3</div>
+                                <div class="button">1</div>
+                                <div class="button">2</div>
+                                <div class="button">3</div>
                             </div>
                             <div class="calc-button-row">
-                                <div class="button"><</div>
+                                <div class="button">B</div>
                                 <div class="button">0</div>
                                 <div class="button">C</div>
                             </div>
                             <div>
-                                <button type="submit" class="submit-btn">Submit</button>
+                                <button onclick="verifyPin();" type="submit" class="submit-btn">Submit</button>
                                 <p class="action-left">3 try left</p>
                             </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="notify-section">
-            <p class="notify">❌ Pin Didn't Match, Please try again</p>
-            <p class="notify">✅ Pin Matched... Secret door is opening for you</p>
+            <div class="notify-section">
+                <p class="notify" id="status-pin-not-match">❌ Pin Didn't Match, Please try again</p>
+                <p class="notify" id="status-pin-match">✅ Pin Matched... Secret door is opening for you</p>
+            </div>
         </div>
     </div>
+
     <script>
-        function generatePinButton(){
-            // console.log("clicked");
-            let generatePin = ((Math.random()*10000)+ ' ').split('.')[0];
-            console.log(generatePin);
-            document.getElementById('show-generate-pin').value = generatePin;
+        function getPin() {
+            const random = Math.random() * 10000;
+            const pin = (random + '').split('.')[0];
+            if (pin.length === 4) {
+                return pin;
+            }
+            else {
+                console.log('Shorter Pin', pin);
+                return getPin();
+            }
         }
+        // display generated pin
+        function generatePin() {
+            const pinInput = document.getElementById('show-generate-pin');
+            pinInput.value = getPin();
+        }
+        // handle calculator button event
+        const buttonContainer = document.getElementById('digit-container');
+        buttonContainer.addEventListener('click', function (event) {
+            const digit = event.target.innerText;
+            if (isNaN(digit)) {
+                // handle backspace
+                // handle clear
+                console.log('handle non digit', digit);
+                if (digit === 'C') {
+                    const typedInput = document.getElementById('typed-pin');
+                    typedInput.value = '';
+                }
+            }
+            else {
+                console.log('handle digit in number', digit);
+                const typedInput = document.getElementById('typed-pin');
+                typedInput.value = typedInput.value + digit;
+            }
+        });
+
+        function verifyPin() {
+            const pin = document.getElementById('show-generate-pin').value;
+            const typedPin = document.getElementById('typed-pin').value;
+
+            if (pin === typedPin) {
+                // const correct = document.getElementById('status-pin-match');
+                // correct.style.display = 'block';
+                // const inCorrect = document.getElementById('status-pin-not-match');
+                // inCorrect.style.display = 'none';
+                displayMatchResult('block','none');
+            } else {
+                // const correct = document.getElementById('status-pin-match');
+                // correct.style.display = 'none';
+                // const inCorrect = document.getElementById('status-pin-not-match');
+                // inCorrect.style.display = 'block';
+                displayMatchResult('none','block');
+            }
+        }
+
+        function displayMatchResult(correctStatus, inCorrectStatus) {
+            const correct = document.getElementById('status-pin-match');
+            correct.style.display = correctStatus;
+            const inCorrect = document.getElementById('status-pin-not-match');
+            inCorrect.style.display = inCorrectStatus;
+        }
+
+        // function generatePinButton(){
+        //     let generatePin = ((Math.random()*10000)+ ' ').split('.')[0];
+        //     document.getElementById('show-generate-pin').value = generatePin;
+        // }
+
+        // function matchGeneratePin(){
+        //     let pinMatcher = document.getElementById("get-pin-to-match").value;
+        //     let generatePin = document.getElementById('show-generate-pin').value;
+        //     if(pinMatcher == generatePin){
+        //         document.getElementById("status-pin-match").style.display = "block";
+        //     }
+        //     if(pinMatcher != generatePin){
+        //         document.getElementById("status-pin-not-match").style.display = "block";
+        //     }
+        // }
+
+        // let calculateNumber = document.querySelectorAll(".button");
+        // for (let i = 0; i < calculateNumber.length; i++) {
+        //     const element = calculateNumber[i].innerText;
+        //     console.log(element);
+        // }
     </script>
 </body>
+
 </html>

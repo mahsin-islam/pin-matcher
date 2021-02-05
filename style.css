@@ -104,3 +104,10 @@ color: #E0B612;
     color: #FF3C5F;
     margin-top: 10px;
 }
+
+#status-pin-not-match{
+    display: none;
+}
+#status-pin-match{
+    display: none;
+}
